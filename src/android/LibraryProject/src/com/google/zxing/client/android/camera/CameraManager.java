@@ -41,8 +41,8 @@ public final class CameraManager {
 
   private static final int MIN_FRAME_WIDTH = 240;
   private static final int MIN_FRAME_HEIGHT = 240;
-  private static final int MAX_FRAME_WIDTH = 600;
-  private static final int MAX_FRAME_HEIGHT = 400;
+  private static final int MAX_FRAME_WIDTH = 800;
+  private static final int MAX_FRAME_HEIGHT = 600;
 
   private final Context context;
   private final CameraConfigurationManager configManager;
@@ -50,6 +50,7 @@ public final class CameraManager {
   private AutoFocusManager autoFocusManager;
   private Rect framingRect;
   private Rect framingRectInPreview;
+  private Point framingViewSize;
   private boolean initialized;
   private boolean previewing;
   private int requestedFramingRectWidth;
@@ -210,13 +211,15 @@ public final class CameraManager {
         // Called early, before init even finished
         return null;
       }
-      int width = screenResolution.x * 3 / 4;
+//      int width = screenResolution.x * 3 / 4;
+      int width = screenResolution.x * 9 / 10;
       if (width < MIN_FRAME_WIDTH) {
         width = MIN_FRAME_WIDTH;
       } else if (width > MAX_FRAME_WIDTH) {
         width = MAX_FRAME_WIDTH;
       }
-      int height = screenResolution.y * 3 / 4;
+//      int height = screenResolution.y * 3 / 4;
+      int height = width * 3 / 4;
       if (height < MIN_FRAME_HEIGHT) {
         height = MIN_FRAME_HEIGHT;
       } else if (height > MAX_FRAME_HEIGHT) {
@@ -247,11 +250,19 @@ public final class CameraManager {
         // Called early, before init even finished
         return null;
       }
+/*
       rect.left = rect.left * cameraResolution.x / screenResolution.x;
       rect.right = rect.right * cameraResolution.x / screenResolution.x;
       rect.top = rect.top * cameraResolution.y / screenResolution.y;
       rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+*/
+      rect.left = rect.left * cameraResolution.y / framingViewSize.x;
+      rect.right = rect.right * cameraResolution.y / framingViewSize.x;
+      rect.top = rect.top * cameraResolution.x / framingViewSize.y;
+      rect.bottom = rect.bottom * cameraResolution.x / framingViewSize.y;
       framingRectInPreview = rect;
+      Log.d(TAG, "framing rect: " + framingRect);
+      Log.d(TAG, "framing prvw: " + framingRectInPreview);
     }
     return framingRectInPreview;
   }
@@ -302,4 +313,7 @@ public final class CameraManager {
                                         rect.width(), rect.height(), false);
   }
 
+  public void setFramingViewSize(Point framingViewSize) {
+    this.framingViewSize = framingViewSize;
+  }
 }
